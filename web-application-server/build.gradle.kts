@@ -1,6 +1,6 @@
 plugins {
     java
-    id("eclipse")
+    kotlin("jvm") version "1.9.21"
 }
 
 group = "org.nhnnext"
@@ -25,7 +25,7 @@ dependencies {
 
 sourceSets {
     main {
-        java.srcDir("src/main/java")
+        java.srcDir("src/main/kotlin")
         resources.srcDir("src/main/resources")
     }
     test {
@@ -44,4 +44,8 @@ tasks.withType<Copy> {
 
 tasks.jar {
     archiveBaseName.set("web-application-server")
+}
+
+kotlin {
+    jvmToolchain(8)
 }

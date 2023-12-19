@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="util.HttpRequestUtilsTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2023-12-19T18:42:02" hostname="jinkyumpark-1" time="0.029">
+  <properties/>
+  <testcase name="parseQueryString" classname="util.HttpRequestUtilsTest" time="0.023"/>
+  <testcase name="getKeyValue" classname="util.HttpRequestUtilsTest" time="0.0"/>
+  <testcase name="parseCookies" classname="util.HttpRequestUtilsTest" time="0.0"/>
+  <testcase name="parseHeader" classname="util.HttpRequestUtilsTest" time="0.0"/>
+  <testcase name="getKeyValue_invalid" classname="util.HttpRequestUtilsTest" time="0.0"/>
+  <testcase name="parseQueryString_invalid" classname="util.HttpRequestUtilsTest" time="0.0"/>
+  <testcase name="parseQueryString_null" classname="util.HttpRequestUtilsTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

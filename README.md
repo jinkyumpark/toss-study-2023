@@ -5,10 +5,15 @@
 - Kotlin Cookbook
 - 오브젝트
 
-# 같이 하는 동기들 구경하기 👀
+# 자바 웹 프로그래밍 Next Step
+## 같이 하는 동기들 구경하기 👀
 - https://github.com/be-student/next-study
 
-# 실습
+## 참고링크
+- https://github.com/slipp/web-application-server
+- https://github.com/slipp/jwp-basic
+
+## 실습
 - [P1 - Calculator] 문자열 계산기
 	- 2.3.1 - 기본 요구사항
 		- 문자를 구분자로 분리한 후 각 숫자의 합을 구해 반환
@@ -19,3 +24,10 @@
 		- method가 1개의 책임만 가지도록
 		- indent 깊이를 1로 유지
 		- else를 사용하지 않기
+- [P2 - QNA] 질문/답변 게시판
+	- 처음 접근하면 질문 목록 화면
+	    - 회원가입 / 로그인 / 로그아웃 / 개인정보 수정이 가능
+	    - 질문하기 화면으로 이동 가능
+	- 각 질문에는 상세화면이 있음
+	    - 질문 CRUD
+	    - 답변 CRUD

@@ -5,6 +5,9 @@
 - Kotlin Cookbook
 - 오브젝트
 
+# 같이 하는 동기들 구경하기 👀
+- https://github.com/be-student/next-study
+
 # 실습
 - [P1 - Calculator] 문자열 계산기
 	- 2.3.1 - 기본 요구사항

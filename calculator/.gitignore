@@ -41,3 +41,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 /.idea/vcs.xml
+/.idea/git_toolbox_prj.xml
+/.idea/kotlinc.xml

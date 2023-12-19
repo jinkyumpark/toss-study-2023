@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="util.IOUtilsTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-12-19T18:06:00" hostname="jinkyumpark-1" time="0.003">
+  <properties/>
+  <testcase name="readData" classname="util.IOUtilsTest" time="0.003"/>
+  <system-out><![CDATA[03:06:00,509 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.groovy]
+03:06:00,509 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+03:06:00,509 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [file:/Users/jinkyumpark/jinkyumpark/toss-study-winterbreak-2023/web-application-server/build/resources/main/logback.xml]
+03:06:00,531 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
+03:06:00,568 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+03:06:00,570 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [STDOUT]
+03:06:00,587 |-WARN in ch.qos.logback.core.ConsoleAppender[STDOUT] - This appender no longer admits a layout as a sub-component, set an encoder instead.
+03:06:00,587 |-WARN in ch.qos.logback.core.ConsoleAppender[STDOUT] - To ensure compatibility, wrapping your layout in LayoutWrappingEncoder.
+03:06:00,587 |-WARN in ch.qos.logback.core.ConsoleAppender[STDOUT] - See also http://logback.qos.ch/codes.html#layoutInsteadOfEncoder for details
+03:06:00,587 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to DEBUG
+03:06:00,587 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [STDOUT] to Logger[ROOT]
+03:06:00,587 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+03:06:00,587 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@2dc54ad4 - Registering current configuration as safe fallback point
+
+03:06:00.592 [DEBUG] [Test worker] [util.IOUtilsTest] - parse body : abcd123
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

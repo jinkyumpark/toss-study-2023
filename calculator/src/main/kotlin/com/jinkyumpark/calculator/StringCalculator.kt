@@ -10,13 +10,35 @@ class StringCalculator {
             return text.toInt()
         }
 
-        val separated = text.split(Regex(":|,|//.*\n"))
-        val numbers = separated.first().toInt() to separated.last().toInt()
-
-        if (numbers.first.isNegative() || numbers.second.isNegative()) {
+        val numbers = separateNumbers(text)
+        if (isNegative(numbers)) {
             throw RuntimeException("Numbers cannot be negative. ${numbers.first}, ${numbers.second}")
         }
 
+        return add(numbers)
+    }
+
+    private fun separateNumbers(text: String): Pair<Int, Int> {
+        val separated = text.split(Regex(":|,|//.*\n"))
+        val firstNumber = separated.first().toInt()
+        val secondNumber = separated.last().toInt()
+
+        return firstNumber to secondNumber
+    }
+
+    private fun isNegative(numbers: Pair<Int, Int>): Boolean {
+        if (numbers.first.isNegative()) {
+            return true
+        }
+
+        if (numbers.second.isNegative()) {
+            return true
+        }
+
+        return false
+    }
+
+    private fun add(numbers: Pair<Int, Int>): Int {
         return numbers.first + numbers.second
     }
 }

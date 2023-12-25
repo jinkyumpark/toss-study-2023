@@ -1,16 +1,42 @@
 package util
 
-import java.io.InputStream
+import model.HttpMethod
 
 object HttpRequestUtils {
 
-    fun parseUrl(inputStream: InputStream): String {
-        return inputStream
-            .bufferedReader()
-            .readLine() // GET /index.html HTTP/1.1
+    fun parseUrl(headers: String): String {
+        return headers
+            .split("\r\n")
+            .first()
             .split(" ")
             .drop(1)
             .first()
+    }
+
+    fun parseMethod(headers: String): HttpMethod {
+        val raw = headers
+            .split("\r\n")
+            .first()
+            .split(" ")
+            .first()
+
+        return HttpMethod.valueOf(raw)
+    }
+
+    fun parseHeaders(headers: String): Map<String, String> {
+        return headers
+            .split("\r\n")
+            .dropLast(2) // drop body and separator
+            .map { it.split(": ") }
+            .associate { it.first() to it.last() }
+    }
+
+    fun parseBody(body: String): Map<String, String> {
+        return body
+            .split("&")
+            .map { it.split("=") }
+            .filter { it.size == 2 }
+            .associate { it.first() to it.last() }
     }
 
     fun parseQueryString(queryString: String?): Map<String, String> {
@@ -25,7 +51,7 @@ object HttpRequestUtils {
         return getKeyValue(header, ": ")
     }
 
-    fun getKeyValue(
+    private fun getKeyValue(
         keyValue: String?,
         regex: String,
     ): Pairs? {

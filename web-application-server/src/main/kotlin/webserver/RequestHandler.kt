@@ -1,18 +1,17 @@
 package webserver
 
-import db.UserRepository
 import exception.ResponseStatusException
 import model.HttpContentType
+import model.HttpMethod
 import model.HttpStatus
-import model.User
 import org.slf4j.LoggerFactory
+import service.PostUserRequestService
+import service.ResourceRequestService
 import util.HttpRequestUtils
 import util.HttpResponseUtils
 import java.io.DataOutputStream
 import java.io.IOException
 import java.net.Socket
-import java.nio.file.Files
-import java.nio.file.Path
 
 class RequestHandler(
     private val connection: Socket,
@@ -25,33 +24,30 @@ class RequestHandler(
         val output = connection.getOutputStream()
 
         try {
-            val url = HttpRequestUtils.parseUrl(input)
+            val lines = input.bufferedReader().readLines()
+            val headersRaw = lines.dropLast(2).joinToString("\r\n")
+            val bodyRaw = lines.drop(1).last()
 
-            val body = when {
-                url.startsWith("/user/create") -> {
-                    val queries = HttpRequestUtils.parseQueryString(url.split("?").last())
-                    val userId = queries["userId"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-                    val password = queries["password"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-                    val name = queries["name"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+            val method = HttpRequestUtils.parseMethod(headersRaw)
+            val url = HttpRequestUtils.parseUrl(headersRaw)
+            val headers = HttpRequestUtils.parseHeaders(headersRaw)
+            val body = HttpRequestUtils.parseBody(bodyRaw)
 
-                    val user = User(
-                        userId = userId,
-                        password = password,
-                        name = name,
-                        email = null,
+            val responseBody = when {
+                method == HttpMethod.POST && url.startsWith("/user/create") -> {
+                    PostUserRequestService.process(
+                        headers = headers,
+                        body = body,
                     )
-
-                    UserRepository.add(user)
-
-                    byteArrayOf()
                 }
 
                 else -> {
-                    try {
-                        Files.readAllBytes(Path.of("./webapp$url"))
-                    } catch (e: Exception) {
-                        throw ResponseStatusException(HttpStatus.NOT_FOUND)
-                    }
+                    ResourceRequestService.process(
+                        method = method,
+                        url = url,
+                        headers = headers,
+                        body = body,
+                    )
                 }
             }
 
@@ -60,11 +56,11 @@ class RequestHandler(
                 dos = dataOutputStream,
                 status = HttpStatus.OK,
                 contentType = HttpContentType.HTML,
-                bodyLength = body.size,
+                bodyLength = responseBody.size,
             )
             HttpResponseUtils.applyHttpBody(
                 dos = dataOutputStream,
-                body = body,
+                body = responseBody,
             )
         } catch (e: ResponseStatusException) {
             val dataOutputStream = DataOutputStream(output)

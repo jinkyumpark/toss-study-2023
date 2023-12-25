@@ -7,7 +7,8 @@
 
 # 자바 웹 프로그래밍 Next Step
 ## 같이 하는 동기들 구경하기 👀
-- https://github.com/be-student/next-study
+- [은우님](https://github.com/be-student/next-study)
+- [좌훈님](https://github.com/JwahoonKim/nextstep-web)
 
 ## 참고링크
 - https://github.com/slipp/web-application-server
@@ -31,10 +32,11 @@
 	- 각 질문에는 상세화면이 있음
 	    - 질문 CRUD
 	    - 답변 CRUD
-- [P3.1] index.html 응답하기
-- [P3.2] GET 방식으로 회원가입하기
-- [P3.3] POST 방식으로 회원가입하기
-- [P3.4] 302 Status Code 적용
-- [P3.5] 로그인하기
-- [P3.6] 사용자 목록 출력
-- [P3.7] CSS 지원하기
+- [P3 - Web Server]
+	- [P3.1] index.html 응답하기
+	- [P3.2] GET 방식으로 회원가입하기
+	- [P3.3] POST 방식으로 회원가입하기
+	- [P3.4] 302 Status Code 적용
+	- [P3.5] 로그인하기
+	- [P3.6] 사용자 목록 출력
+	- [P3.7] CSS 지원하기

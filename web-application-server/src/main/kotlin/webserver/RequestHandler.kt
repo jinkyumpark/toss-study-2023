@@ -1,9 +1,14 @@
 package webserver
 
+import model.HttpContentType
+import model.HttpStatus
 import org.slf4j.LoggerFactory
+import util.HttpResponseUtils
 import java.io.DataOutputStream
 import java.io.IOException
 import java.net.Socket
+import java.nio.file.Files
+import java.nio.file.Path
 
 class RequestHandler(
     private val connection: Socket,
@@ -11,49 +16,45 @@ class RequestHandler(
 
     override fun run() {
         log.debug("New Client Connect! Connected IP : ${connection.getInetAddress()}, Port : ${connection.getPort()}")
-        try {
-            val input = connection.getInputStream()
-            val output = connection.getOutputStream()
 
-            try {
-                val dos = DataOutputStream(output)
-                val body = "Hello World".toByteArray()
-                response200Header(dos, body.size)
-                responseBody(dos, body)
-            } finally {
-                input.close()
-                output.close()
-            }
+        val input = connection.getInputStream()
+        val output = connection.getOutputStream()
+
+        try {
+            val url = input
+                .bufferedReader()
+                .readLine() // GET /index.html HTTP/1.1
+                .split(" ")
+                .drop(1)
+                .first()
+
+            val body = Files.readAllBytes(Path.of("./webapp$url"))
+            val dataOutputStream = DataOutputStream(output)
+
+            HttpResponseUtils.applyHttpHeader(
+                dos = dataOutputStream,
+                status = HttpStatus.OK,
+                contentType = HttpContentType.HTML,
+                bodyLength = body.size,
+            )
+
+            HttpResponseUtils.applyHttpBody(
+                dos = dataOutputStream,
+                body = body,
+            )
+        } catch (e: IOException) {
+            val dataOutputStream = DataOutputStream(output)
+            HttpResponseUtils.applyHttpHeader(
+                dos = dataOutputStream,
+                status = HttpStatus.NOT_FOUND,
+                contentType = HttpContentType.HTML,
+                bodyLength = 0,
+            )
         } catch (e: IOException) {
             log.error(e.message)
-        }
-    }
-
-    private fun response200Header(
-        dos: DataOutputStream,
-        lengthOfBodyContent: Int,
-    ) {
-        try {
-            dos.apply {
-                writeBytes("HTTP/1.1 200 OK \r\n")
-                writeBytes("Content-Type: text/html;charset=utf-8\r\n")
-                writeBytes("Content-Length: $lengthOfBodyContent\r\n")
-                writeBytes("\r\n")
-            }
-        } catch (e: IOException) {
-            log.error(e.message)
-        }
-    }
-
-    private fun responseBody(
-        dos: DataOutputStream,
-        body: ByteArray,
-    ) {
-        try {
-            dos.write(body, 0, body.size)
-            dos.flush()
-        } catch (e: IOException) {
-            log.error(e.message)
+        } finally {
+            input.close()
+            output.close()
         }
     }
 

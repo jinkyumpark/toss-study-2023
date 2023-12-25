@@ -12,13 +12,17 @@ class RequestHandler(
     override fun run() {
         log.debug("New Client Connect! Connected IP : ${connection.getInetAddress()}, Port : ${connection.getPort()}")
         try {
-            connection.getInputStream().use {
-                connection.getOutputStream().use { outputStream ->
-                    val dos = DataOutputStream(outputStream)
-                    val body = "Hello World".toByteArray()
-                    response200Header(dos, body.size)
-                    responseBody(dos, body)
-                }
+            val input = connection.getInputStream()
+            val output = connection.getOutputStream()
+
+            try {
+                val dos = DataOutputStream(output)
+                val body = "Hello World".toByteArray()
+                response200Header(dos, body.size)
+                responseBody(dos, body)
+            } finally {
+                input.close()
+                output.close()
             }
         } catch (e: IOException) {
             log.error(e.message)
@@ -30,10 +34,12 @@ class RequestHandler(
         lengthOfBodyContent: Int,
     ) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n")
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n")
-            dos.writeBytes("Content-Length: $lengthOfBodyContent\r\n")
-            dos.writeBytes("\r\n")
+            dos.apply {
+                writeBytes("HTTP/1.1 200 OK \r\n")
+                writeBytes("Content-Type: text/html;charset=utf-8\r\n")
+                writeBytes("Content-Length: $lengthOfBodyContent\r\n")
+                writeBytes("\r\n")
+            }
         } catch (e: IOException) {
             log.error(e.message)
         }

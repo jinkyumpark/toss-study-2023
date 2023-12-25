@@ -3,7 +3,7 @@ plugins {
     kotlin("jvm") version "1.9.21"
 }
 
-group = "org.nhnnext"
+group = "com.jinkyumpark"
 version = "1.0"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -12,13 +12,11 @@ repositories {
 }
 
 object Version {
-    const val GUAVA = "18.0"
     const val LOGBACK = "1.1.2"
     const val JUNIT = "4.11"
 }
 
 dependencies {
-    implementation("com.google.guava:guava:${Version.GUAVA}")
     implementation("ch.qos.logback:logback-classic:${Version.LOGBACK}")
     testImplementation("junit:junit:${Version.JUNIT}")
 }
@@ -29,21 +27,27 @@ sourceSets {
         resources.srcDir("src/main/resources")
     }
     test {
-        java.srcDir("src/test/java")
+        java.srcDir("src/test/kotlin")
         resources.srcDir("target/test-classes")
     }
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
+tasks {
+    compileJava {
+        options.encoding = "UTF-8"
+    }
 
-tasks.withType<Copy> {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
+    copy {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 
-tasks.jar {
-    archiveBaseName.set("web-application-server")
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
+    jar {
+        archiveBaseName.set("web-application-server")
+    }
 }
 
 kotlin {

@@ -5,7 +5,7 @@ import model.User
 object UserRepository : Repository<User> {
     private val users: MutableMap<String, User> = mutableMapOf()
 
-    override fun addUser(user: User) {
+    override fun add(user: User) {
         users[user.userId] = user
     }
 

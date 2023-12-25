@@ -21,12 +21,7 @@ class RequestHandler(
         val output = connection.getOutputStream()
 
         try {
-            val url = input
-                .bufferedReader()
-                .readLine() // GET /index.html HTTP/1.1
-                .split(" ")
-                .drop(1)
-                .first()
+            val url = HttpRequestUtils.parseUrl(input)
 
             val body = Files.readAllBytes(Path.of("./webapp$url"))
             val dataOutputStream = DataOutputStream(output)

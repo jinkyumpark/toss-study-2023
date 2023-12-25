@@ -1,6 +1,17 @@
 package util
 
+import java.io.InputStream
+
 object HttpRequestUtils {
+
+    fun parseUrl(inputStream: InputStream): String {
+        return inputStream
+            .bufferedReader()
+            .readLine() // GET /index.html HTTP/1.1
+            .split(" ")
+            .drop(1)
+            .first()
+    }
 
     fun parseQueryString(queryString: String?): Map<String, String> {
         return parseValues(queryString, "&")
@@ -10,9 +21,7 @@ object HttpRequestUtils {
         return parseValues(cookie, ";")
     }
 
-    fun parseHeader(
-        header: String,
-    ): Pairs? {
+    fun parseHeader(header: String): Pairs? {
         return getKeyValue(header, ": ")
     }
 
@@ -45,8 +54,7 @@ object HttpRequestUtils {
 
         val tokens = values.split(separator)
         return tokens
-            .map { getKeyValue(it, "=") }
-            .filterNotNull()
+            .mapNotNull { getKeyValue(it, "=") }
             .associate { it.key to it.value }
     }
 

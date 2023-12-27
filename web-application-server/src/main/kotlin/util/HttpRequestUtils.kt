@@ -27,7 +27,6 @@ object HttpRequestUtils {
         return headers
             .split("\r\n")
             .drop(1)
-            .dropLast(2) // drop body and separator
             .map { it.split(": ") }
             .associate { it.first() to it.last() }
     }

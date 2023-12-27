@@ -4,6 +4,7 @@ import exception.ResponseStatusException
 import model.HttpContentType
 import model.HttpMethod
 import org.slf4j.LoggerFactory
+import service.GetUserListRequestService
 import service.PostUserCreateRequestService
 import service.PostUserLoginRequestService
 import service.ResourceRequestService
@@ -42,6 +43,7 @@ class RequestHandler(
             val method = HttpRequestUtils.parseMethod(headersRaw.toString())
             val url = HttpRequestUtils.parseUrl(headersRaw.toString())
             val body = HttpRequestUtils.parseBody(bodyRaw.joinToString(""))
+            val cookie = HttpRequestUtils.parseCookies(headers["Cookie"] ?: "")
 
             val responseBody = when {
                 method == HttpMethod.GET && url == "/" -> {
@@ -64,6 +66,16 @@ class RequestHandler(
                     PostUserLoginRequestService.process(
                         headers = headers,
                         body = body,
+                        cookie = cookie,
+                    )
+                }
+
+                method == HttpMethod.GET && url.startsWith("/user/list") -> {
+                    GetUserListRequestService.process(
+                        headers = headers,
+                        body = body,
+                        cookie = cookie,
+
                     )
                 }
 

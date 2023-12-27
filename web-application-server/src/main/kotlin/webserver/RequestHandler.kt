@@ -24,14 +24,24 @@ class RequestHandler(
         val output = connection.getOutputStream()
 
         try {
-            val lines = input.bufferedReader().readLines()
-            val headersRaw = lines.dropLast(2).joinToString("\r\n")
-            val bodyRaw = lines.drop(1).last()
+            val reader = input.bufferedReader()
+            val headersRaw = StringBuilder()
+            var line: String? = reader.readLine()
+            while (!line.isNullOrBlank()) {
+                headersRaw.append(line).append("\r\n")
+                line = reader.readLine()
+            }
+            val headers = HttpRequestUtils.parseHeaders(headersRaw.toString())
 
-            val method = HttpRequestUtils.parseMethod(headersRaw)
-            val url = HttpRequestUtils.parseUrl(headersRaw)
-            val headers = HttpRequestUtils.parseHeaders(headersRaw)
-            val body = HttpRequestUtils.parseBody(bodyRaw)
+            val contentLength = headers["Content-Length"]?.toInt() ?: 0
+            val bodyRaw = CharArray(contentLength)
+            if (contentLength > 0) {
+                reader.read(bodyRaw, 0, contentLength)
+            }
+
+            val method = HttpRequestUtils.parseMethod(headersRaw.toString())
+            val url = HttpRequestUtils.parseUrl(headersRaw.toString())
+            val body = HttpRequestUtils.parseBody(bodyRaw.joinToString(""))
 
             val responseBody = when {
                 method == HttpMethod.POST && url.startsWith("/user/create") -> {

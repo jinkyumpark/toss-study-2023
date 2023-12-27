@@ -2,6 +2,7 @@ package webserver
 
 import exception.ResponseStatusException
 import model.HttpContentType
+import model.HttpHeader
 import model.HttpMethod
 import org.slf4j.LoggerFactory
 import service.GetUserListRequestService
@@ -19,31 +20,26 @@ class RequestHandler(
 ) : Thread() {
 
     override fun run() {
-        log.debug("New Client Connect! Connected IP : ${connection.getInetAddress()}, Port : ${connection.getPort()}")
+        log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort())
 
         val input = connection.getInputStream()
         val output = connection.getOutputStream()
 
         try {
             val reader = input.bufferedReader()
-            val headersRaw = StringBuilder()
-            var line: String? = reader.readLine()
-            while (!line.isNullOrBlank()) {
-                headersRaw.append(line).append("\r\n")
-                line = reader.readLine()
-            }
-            val headers = HttpRequestUtils.parseHeaders(headersRaw.toString())
+            val headersRaw = reader
+                .lineSequence()
+                .takeWhile { it.isNotBlank() }
+                .joinToString("\r\n")
+            val headers = HttpRequestUtils.parseHeaders(headersRaw)
 
             val contentLength = headers["Content-Length"]?.toInt() ?: 0
-            val bodyRaw = CharArray(contentLength)
-            if (contentLength > 0) {
-                reader.read(bodyRaw, 0, contentLength)
-            }
+            val bodyRaw = if (contentLength > 0) reader.readText().take(contentLength) else ""
 
-            val method = HttpRequestUtils.parseMethod(headersRaw.toString())
-            val url = HttpRequestUtils.parseUrl(headersRaw.toString())
-            val body = HttpRequestUtils.parseBody(bodyRaw.joinToString(""))
-            val cookie = HttpRequestUtils.parseCookies(headers["Cookie"] ?: "")
+            val method = HttpRequestUtils.parseMethod(headersRaw)
+            val url = HttpRequestUtils.parseUrl(headersRaw)
+            val body = HttpRequestUtils.parseBody(bodyRaw)
+            val cookie = HttpRequestUtils.parseCookies(headers[HttpHeader.COOKIE.key] ?: "")
 
             val responseBody = when {
                 method == HttpMethod.GET && url == "/" -> {

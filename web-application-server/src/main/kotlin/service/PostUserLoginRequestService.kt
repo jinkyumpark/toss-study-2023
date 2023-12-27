@@ -21,14 +21,14 @@ object PostUserLoginRequestService : RequestService {
             user?.password == password -> {
                 mapOf(
                     HttpHeader.REDIRECT_URL to "/index.html",
-                    HttpHeader.COOKIE to "isLogin=true;",
+                    HttpHeader.SET_COOKIE to "isLogin=true;",
                 )
             }
 
             else -> {
                 mapOf(
                     HttpHeader.REDIRECT_URL to "/user/login_failed.html",
-                    HttpHeader.COOKIE to "isLogin=false;",
+                    HttpHeader.SET_COOKIE to "isLogin=false;",
                 )
             }
         }

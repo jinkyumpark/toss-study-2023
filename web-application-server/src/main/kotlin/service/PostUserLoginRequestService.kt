@@ -4,38 +4,42 @@ import db.UserRepository
 import exception.ResponseStatusException
 import model.*
 
-object PostUserRequestService : RequestService {
+object PostUserLoginRequestService : RequestService {
     override fun process(
         method: HttpMethod?,
         url: String?,
         headers: Map<String, String>,
         body: Map<String, String>,
         cookie: Map<String, String>,
-        urlParameters: Map<String, String>,
+        urlParameters: Map<String, String>
     ): RequestProcessed {
         val userId = body["userId"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
         val password = body["password"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-        val name = body["name"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
-        val user = User(
-            userId = userId,
-            password = password,
-            name = name,
-            email = null,
-        )
-        UserRepository.add(user)
+        val user = UserRepository.findById(userId)
+        val responseHeaders = when {
+            user?.password == password -> {
+                mapOf(
+                    HttpHeader.REDIRECT_URL to "/index.html",
+                    HttpHeader.COOKIE to "isLogin=true",
+                )
+            }
 
-        val responseHeader = mapOf(
-            HttpHeader.REDIRECT_URL to "/index.html",
-        )
+            else -> {
+                mapOf(
+                    HttpHeader.REDIRECT_URL to "/user/login_failed.html",
+                    HttpHeader.COOKIE to "isLogin=false",
+                )
+            }
+        }
 
         return RequestProcessed(
-            headers = responseHeader,
+            headers = responseHeaders,
             status = HttpStatus.REDIRECT,
             body = RequestProcessed.Body(
                 contentType = HttpContentType.HTML,
                 data = byteArrayOf(),
-            ),
+            )
         )
     }
 }

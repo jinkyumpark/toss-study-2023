@@ -4,7 +4,8 @@ import exception.ResponseStatusException
 import model.HttpContentType
 import model.HttpMethod
 import org.slf4j.LoggerFactory
-import service.PostUserRequestService
+import service.PostUserCreateRequestService
+import service.PostUserLoginRequestService
 import service.ResourceRequestService
 import util.HttpRequestUtils
 import util.HttpResponseUtils
@@ -43,17 +44,24 @@ class RequestHandler(
             val body = HttpRequestUtils.parseBody(bodyRaw.joinToString(""))
 
             val responseBody = when {
-                method == HttpMethod.POST && url.startsWith("/user/create") -> {
-                    PostUserRequestService.process(
+                method == HttpMethod.GET && url == "/" -> {
+                    ResourceRequestService.process(
+                        method = method,
+                        url = "/index.html",
                         headers = headers,
                         body = body,
                     )
                 }
 
-                method == HttpMethod.GET && url == "/" -> {
-                    ResourceRequestService.process(
-                        method = method,
-                        url = "/index.html",
+                method == HttpMethod.POST && url.startsWith("/user/create") -> {
+                    PostUserCreateRequestService.process(
+                        headers = headers,
+                        body = body,
+                    )
+                }
+
+                method == HttpMethod.POST && url.startsWith("/user/login") -> {
+                    PostUserLoginRequestService.process(
                         headers = headers,
                         body = body,
                     )

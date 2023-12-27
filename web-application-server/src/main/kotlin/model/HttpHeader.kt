@@ -5,5 +5,6 @@ enum class HttpHeader(
 ) {
     REDIRECT_URL("Location"),
     CONTENT_TYPE("Content-Type"),
-    CONTENT_LENGTH("Content-Length")
+    CONTENT_LENGTH("Content-Length"),
+    COOKIE("Cookie"),
 }

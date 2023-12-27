@@ -9,8 +9,8 @@ object UserRepository : Repository<User> {
         users[user.userId] = user
     }
 
-    override fun findById(id: String): User {
-        return users[id]!!
+    override fun findById(id: String): User? {
+        return users[id]
     }
 
     override fun findAll(): Collection<User> {

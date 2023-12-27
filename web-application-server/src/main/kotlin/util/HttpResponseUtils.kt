@@ -1,6 +1,7 @@
 package util
 
 import model.HttpContentType
+import model.HttpHeader
 import model.HttpStatus
 import org.slf4j.LoggerFactory
 import java.io.DataOutputStream
@@ -14,18 +15,18 @@ object HttpResponseUtils {
         status: HttpStatus,
         contentType: HttpContentType,
         bodyLength: Int,
-        headers: Map<String, String> = mapOf(),
+        headers: Map<HttpHeader, String> = mapOf(),
     ) {
         try {
             dos.apply {
                 writeBytes("HTTP/1.1 ${status.code} ${status.displayName}\r\n")
-                writeBytes("Content-Type: ${contentType.raw};charset=utf-8\r\n")
-                writeBytes("Content-Length: $bodyLength\r\n")
+                writeBytes("${HttpHeader.CONTENT_TYPE}: ${contentType.raw};charset=utf-8\r\n")
+                writeBytes("${HttpHeader.CONTENT_LENGTH.key}: $bodyLength\r\n")
 
                 headers
-                    .filter { it.key !in listOf("Content-Type", "Content-Length") }
+                    .filter { it.key !in listOf(HttpHeader.CONTENT_TYPE, HttpHeader.CONTENT_LENGTH) }
                     .forEach { (key, value) ->
-                        writeBytes("$key: $value\r\n")
+                        writeBytes("${key.key}: $value\r\n")
                     }
 
                 writeBytes("\r\n")

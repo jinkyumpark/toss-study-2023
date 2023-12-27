@@ -26,7 +26,7 @@ object PostUserRequestService : RequestService {
         UserRepository.add(user)
 
         val responseHeader = mapOf(
-            "Location" to "/index.html",
+            HttpHeader.REDIRECT_URL to "/index.html",
         )
 
         return RequestProcessed(

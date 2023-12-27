@@ -1,7 +1,7 @@
 package model
 
 data class RequestProcessed(
-    val headers: Map<String, String>,
+    val headers: Map<HttpHeader, String>,
     val status: HttpStatus,
     val body: Body,
 ) {

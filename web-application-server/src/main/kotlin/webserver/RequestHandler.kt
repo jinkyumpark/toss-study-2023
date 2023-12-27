@@ -41,6 +41,15 @@ class RequestHandler(
                     )
                 }
 
+                method == HttpMethod.GET && url == "/" -> {
+                    ResourceRequestService.process(
+                        method = method,
+                        url = "/index.html",
+                        headers = headers,
+                        body = body,
+                    )
+                }
+
                 else -> {
                     ResourceRequestService.process(
                         method = method,

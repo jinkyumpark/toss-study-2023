@@ -18,8 +18,7 @@ fun main(args: Array<String>?) {
             log.info("Web Application Server started at port $port")
             while (true) {
                 val connection = listenSocket.accept() ?: break
-                val requestHandler = RequestHandler(connection)
-                requestHandler.start()
+                RequestHandler(connection).start()
             }
         }
     } catch (e: IOError) {

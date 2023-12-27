@@ -17,8 +17,11 @@ fun main(args: Array<String>?) {
         ServerSocket(port).use { listenSocket ->
             log.info("Web Application Server started at port $port")
             while (true) {
-                val connection = listenSocket.accept() ?: break
-                RequestHandler(connection).start()
+                listenSocket
+                    .accept()
+                    ?.let { RequestHandler(it) }
+                    ?.start()
+                    ?: break
             }
         }
     } catch (e: IOError) {

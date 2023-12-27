@@ -26,6 +26,7 @@ object HttpRequestUtils {
     fun parseHeaders(headers: String): Map<String, String> {
         return headers
             .split("\r\n")
+            .drop(1)
             .dropLast(2) // drop body and separator
             .map { it.split(": ") }
             .associate { it.first() to it.last() }

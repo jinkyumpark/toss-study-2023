@@ -2,9 +2,7 @@ package service
 
 import db.UserRepository
 import exception.ResponseStatusException
-import model.HttpMethod
-import model.HttpStatus
-import model.User
+import model.*
 
 object PostUserRequestService : RequestService {
     override fun process(
@@ -14,7 +12,7 @@ object PostUserRequestService : RequestService {
         body: Map<String, String>,
         cookie: Map<String, String>,
         urlParameters: Map<String, String>,
-    ): ByteArray {
+    ): RequestProcessed {
         val userId = body["userId"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
         val password = body["password"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
         val name = body["name"] ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
@@ -27,6 +25,17 @@ object PostUserRequestService : RequestService {
         )
         UserRepository.add(user)
 
-        return byteArrayOf()
+        val responseHeader = mapOf(
+            "Location" to "/index.html",
+        )
+
+        return RequestProcessed(
+            headers = responseHeader,
+            status = HttpStatus.REDIRECT,
+            body = RequestProcessed.Body(
+                contentType = HttpContentType.HTML,
+                data = byteArrayOf(),
+            ),
+        )
     }
 }

@@ -14,12 +14,20 @@ object HttpResponseUtils {
         status: HttpStatus,
         contentType: HttpContentType,
         bodyLength: Int,
+        headers: Map<String, String> = mapOf(),
     ) {
         try {
             dos.apply {
                 writeBytes("HTTP/1.1 ${status.code} ${status.displayName}\r\n")
                 writeBytes("Content-Type: ${contentType.raw};charset=utf-8\r\n")
                 writeBytes("Content-Length: $bodyLength\r\n")
+
+                headers
+                    .filter { it.key !in listOf("Content-Type", "Content-Length") }
+                    .forEach { (key, value) ->
+                        writeBytes("$key: $value\r\n")
+                    }
+
                 writeBytes("\r\n")
             }
         } catch (e: Exception) {

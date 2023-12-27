@@ -1,6 +1,7 @@
 package service
 
 import model.HttpMethod
+import model.RequestProcessed
 
 interface RequestService {
     fun process(
@@ -10,5 +11,5 @@ interface RequestService {
         body: Map<String, String> = mapOf(),
         cookie: Map<String, String> = mapOf(),
         urlParameters: Map<String, String> = mapOf(),
-    ): ByteArray
+    ): RequestProcessed
 }

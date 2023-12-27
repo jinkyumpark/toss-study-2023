@@ -3,7 +3,6 @@ package webserver
 import exception.ResponseStatusException
 import model.HttpContentType
 import model.HttpMethod
-import model.HttpStatus
 import org.slf4j.LoggerFactory
 import service.PostUserRequestService
 import service.ResourceRequestService
@@ -73,13 +72,14 @@ class RequestHandler(
             val dataOutputStream = DataOutputStream(output)
             HttpResponseUtils.applyHttpHeader(
                 dos = dataOutputStream,
-                status = HttpStatus.OK,
-                contentType = HttpContentType.HTML,
-                bodyLength = responseBody.size,
+                status = responseBody.status,
+                contentType = responseBody.body.contentType,
+                bodyLength = responseBody.body.data.size,
+                headers = responseBody.headers,
             )
             HttpResponseUtils.applyHttpBody(
                 dos = dataOutputStream,
-                body = responseBody,
+                body = responseBody.body.data,
             )
         } catch (e: ResponseStatusException) {
             val dataOutputStream = DataOutputStream(output)

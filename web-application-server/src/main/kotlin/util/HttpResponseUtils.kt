@@ -1,8 +1,6 @@
 package util
 
-import model.HttpContentType
-import model.HttpHeader
-import model.HttpStatus
+import http.*
 import org.slf4j.LoggerFactory
 import java.io.DataOutputStream
 
@@ -10,39 +8,33 @@ object HttpResponseUtils {
 
     private val log = LoggerFactory.getLogger(HttpResponseUtils::class.java)
 
-    fun applyHttpHeader(
+    fun applyHttpResponse(
         dos: DataOutputStream,
-        status: HttpStatus,
-        contentType: HttpContentType,
-        bodyLength: Int,
-        headers: Map<HttpHeader, String> = mapOf(),
+        response: HttpResponse,
     ) {
         try {
-            dos.apply {
-                writeBytes("HTTP/1.1 ${status.code} ${status.displayName}\r\n")
-                writeBytes("${HttpHeader.CONTENT_TYPE}: ${contentType.raw};charset=utf-8\r\n")
-                writeBytes("${HttpHeader.CONTENT_LENGTH.key}: $bodyLength\r\n")
+            dos
+                .apply {
+                    writeBytes("HTTP/1.1 ${response.status.code} ${response.status.displayName}\r\n")
+                    writeBytes("${HttpHeader.Key.CONTENT_TYPE.raw}: ${response.body.contentType.raw};charset=utf-8\r\n")
+                    writeBytes("${HttpHeader.Key.CONTENT_LENGTH.raw}: ${response.body.data.size}\r\n")
 
-                headers
-                    .filter { it.key !in listOf(HttpHeader.CONTENT_TYPE, HttpHeader.CONTENT_LENGTH) }
-                    .forEach { (key, value) ->
-                        writeBytes("${key.key}: $value\r\n")
-                    }
+                    response.headers
+                        .filter {
+                            it.key !in listOf(
+                                HttpHeader.Key.CONTENT_TYPE.raw,
+                                HttpHeader.Key.CONTENT_LENGTH.raw,
+                            )
+                        }
+                        .forEach { (key, value) ->
+                            writeBytes("${key}: $value\r\n")
+                        }
 
-                writeBytes("\r\n")
-            }
-        } catch (e: Exception) {
-            log.error(e.message)
-        }
-    }
+                    writeBytes("\r\n")
+                }
 
-    fun applyHttpBody(
-        dos: DataOutputStream,
-        body: ByteArray,
-    ) {
-        try {
-            dos.write(body, 0, body.size)
-            dos.flush()
+                dos.write(response.body.data, 0, response.body.data.size)
+                dos.flush()
         } catch (e: Exception) {
             log.error(e.message)
         }

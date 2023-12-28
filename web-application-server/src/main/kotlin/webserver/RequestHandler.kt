@@ -1,18 +1,14 @@
 package webserver
 
 import exception.ResponseStatusException
-import model.HttpContentType
-import model.HttpHeader
-import model.HttpMethod
+import http.HttpHeader
 import org.slf4j.LoggerFactory
-import service.GetUserListRequestService
-import service.PostUserCreateRequestService
-import service.PostUserLoginRequestService
-import service.ResourceRequestService
+import http.HttpResponse
 import util.HttpRequestUtils
 import util.HttpResponseUtils
 import java.io.DataOutputStream
 import java.io.IOException
+import java.lang.Exception
 import java.net.Socket
 
 class RequestHandler(
@@ -26,86 +22,25 @@ class RequestHandler(
         val output = connection.getOutputStream()
 
         try {
-            val reader = input.bufferedReader()
-            val headersRaw = reader
-                .lineSequence()
-                .takeWhile { it.isNotBlank() }
-                .joinToString("\r\n")
-            val headers = HttpRequestUtils.parseHeaders(headersRaw)
-
-            val contentLength = headers["Content-Length"]?.toInt() ?: 0
-            val bodyRaw = if (contentLength > 0) reader.readText().take(contentLength) else ""
-
-            val method = HttpRequestUtils.parseMethod(headersRaw)
-            val url = HttpRequestUtils.parseUrl(headersRaw)
-            val body = HttpRequestUtils.parseBody(bodyRaw)
-            val cookie = HttpRequestUtils.parseCookies(headers[HttpHeader.COOKIE.key] ?: "")
-
-            val responseBody = when {
-                method == HttpMethod.GET && url == "/" -> {
-                    ResourceRequestService.process(
-                        method = method,
-                        url = "/index.html",
-                        headers = headers,
-                        body = body,
-                    )
-                }
-
-                method == HttpMethod.POST && url.startsWith("/user/create") -> {
-                    PostUserCreateRequestService.process(
-                        headers = headers,
-                        body = body,
-                    )
-                }
-
-                method == HttpMethod.POST && url.startsWith("/user/login") -> {
-                    PostUserLoginRequestService.process(
-                        headers = headers,
-                        body = body,
-                        cookie = cookie,
-                    )
-                }
-
-                method == HttpMethod.GET && url.startsWith("/user/list") -> {
-                    GetUserListRequestService.process(
-                        headers = headers,
-                        body = body,
-                        cookie = cookie,
-
-                    )
-                }
-
-                else -> {
-                    ResourceRequestService.process(
-                        method = method,
-                        url = url,
-                        headers = headers,
-                        body = body,
-                    )
-                }
-            }
+            val request = HttpRequestUtils.getRequest(input)
+            val controller = RequestMapping().getController(RequestMapping.Key(method = request.method, url = request.url.base))
+            val response = controller.process(request)
 
             val dataOutputStream = DataOutputStream(output)
-            HttpResponseUtils.applyHttpHeader(
-                dos = dataOutputStream,
-                status = responseBody.status,
-                contentType = responseBody.body.contentType,
-                bodyLength = responseBody.body.data.size,
-                headers = responseBody.headers,
-            )
-            HttpResponseUtils.applyHttpBody(
-                dos = dataOutputStream,
-                body = responseBody.body.data,
-            )
+            HttpResponseUtils.applyHttpResponse(dos = dataOutputStream, response = response)
         } catch (e: ResponseStatusException) {
             val dataOutputStream = DataOutputStream(output)
-            HttpResponseUtils.applyHttpHeader(
-                dos = dataOutputStream,
+            val errorResponse = HttpResponse(
+                headers = listOf(),
                 status = e.status,
-                contentType = HttpContentType.HTML,
-                bodyLength = 0,
+                body = HttpResponse.Body(
+                    contentType = HttpHeader.Value.ContentType.HTML,
+                    data = byteArrayOf(),
+                )
             )
-        } catch (e: IOException) {
+
+            HttpResponseUtils.applyHttpResponse(dos = dataOutputStream, response = errorResponse)
+        } catch (e: Exception) {
             log.error(e.message)
         } finally {
             input.close()

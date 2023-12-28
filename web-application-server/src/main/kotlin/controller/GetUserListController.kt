@@ -1,30 +1,28 @@
-package service
+package controller
 
 import db.UserRepository
-import model.*
+import http.*
 
-object GetUserListRequestService : RequestService {
-    override fun process(
-        method: HttpMethod?,
-        url: String?,
-        headers: Map<String, String>,
-        body: Map<String, String>,
-        cookie: Map<String, String>,
-        urlParameters: Map<String, String>
-    ): RequestProcessed {
+class GetUserListController : Controller {
+    override fun process(request: HttpRequest): HttpResponse {
         val isLogin = when {
-            cookie["isLogin"] == "true" -> true
+            request.cookie["isLogin"] == "true" -> true
             else -> false
         }
 
         if (!isLogin) {
-            return RequestProcessed(
-                headers = mapOf(
-                    HttpHeader.REDIRECT_URL to "/user/login.html"
-                ), status = HttpStatus.REDIRECT, body = RequestProcessed.Body(
-                    contentType = HttpContentType.HTML,
+            return HttpResponse(
+                headers = listOf(
+                    HttpHeader(
+                        key = HttpHeader.Key.REDIRECT_URL.raw,
+                        value = "/user/login.html"
+                    ),
+                ),
+                body = HttpResponse.Body(
+                    contentType = HttpHeader.Value.ContentType.HTML,
                     data = byteArrayOf(),
-                )
+                ),
+                status = HttpResponse.Status.REDIRECT,
             )
         }
 
@@ -53,11 +51,11 @@ object GetUserListRequestService : RequestService {
             }
             .toByteArray()
 
-        return RequestProcessed(
-            headers = mapOf(),
-            status = HttpStatus.OK,
-            body = RequestProcessed.Body(
-                contentType = HttpContentType.HTML,
+        return HttpResponse(
+            headers = listOf(),
+            status = HttpResponse.Status.OK,
+            body = HttpResponse.Body(
+                contentType = HttpHeader.Value.ContentType.HTML,
                 data = responseBody,
             )
         )

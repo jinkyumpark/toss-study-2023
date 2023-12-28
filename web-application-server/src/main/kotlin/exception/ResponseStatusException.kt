@@ -1,8 +1,7 @@
 package exception
 
-import model.HttpStatus
-import java.lang.IllegalStateException
+import http.HttpResponse
 
 class ResponseStatusException(
-    val status: HttpStatus,
+    val status: HttpResponse.Status,
 ) : IllegalStateException()
